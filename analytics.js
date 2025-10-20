@@ -6,7 +6,7 @@
 
   // Check if Google Analytics is loaded
   function isGALoaded() {
-    return typeof gtag !== 'undefined' || typeof ga !== 'undefined' || (window.dataLayer && window.dataLayer.push);
+    return typeof window.gtag !== 'undefined' || (window.dataLayer && window.dataLayer.push);
   }
 
   // Send event to Google Analytics
@@ -16,31 +16,31 @@
       return;
     }
 
-    // GA4 (gtag.js)
-    if (typeof gtag !== 'undefined') {
-      gtag('event', eventName, {
+    console.log('Tracking event:', eventName, eventCategory, eventLabel);
+
+    // GA4 (gtag.js) - use window.gtag to access global
+    if (typeof window.gtag !== 'undefined') {
+      window.gtag('event', eventName, {
         event_category: eventCategory,
-        event_label: eventLabel,
-        page_location: window.location.href,
-        page_title: document.title
+        event_label: eventLabel
       });
-    }
-    // Universal Analytics (analytics.js)
-    else if (typeof ga !== 'undefined') {
-      ga('send', 'event', eventCategory, eventName, eventLabel);
     }
     // dataLayer fallback
     else if (window.dataLayer) {
       window.dataLayer.push({
         event: eventName,
-        eventCategory: eventCategory,
-        eventLabel: eventLabel
+        event_category: eventCategory,
+        event_label: eventLabel
       });
     }
   }
 
   // Initialize tracking when DOM is ready
   function initTracking() {
+    console.log('Analytics initialized. GA loaded:', isGALoaded());
+    console.log('gtag available:', typeof window.gtag !== 'undefined');
+    console.log('dataLayer available:', !!window.dataLayer);
+
     // Track all "Start Free Trial" buttons
     const trialButtons = document.querySelectorAll('.btn-primary');
     trialButtons.forEach(function(button, index) {
